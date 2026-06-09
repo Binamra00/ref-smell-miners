@@ -1,4 +1,4 @@
-# Smell-Ranker: Resilient Repository Mining Engine
+# RS-Miners: Resilient Repository Mining Engine
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
@@ -12,7 +12,7 @@
 
 ## 1. System Overview
 
-**Smell-Ranker** provides a resilient execution pipeline to orchestrate structural and evolutionary miners across historical Java repository states. It reconstructs the historical evolution of a codebase by extracting objective developer actions (refactorings) and evaluating structural decay (code smells) across the entire Git lineage.
+**RS-Miners** provides a resilient execution pipeline to orchestrate structural and evolutionary miners across historical Java repository states. It reconstructs the historical evolution of a codebase by extracting objective developer actions (refactorings) and evaluating structural decay (code smells) across the entire Git lineage.
 
 Rather than building a novel static analyzer, Smell-Ranker serves as a highly capable, time-traveling wrapper around industry-standard tools (**PMD** and **RefactoringMiner**). It handles the tedious, error-prone mechanics of historical Git checkout operations, headless static analysis, and crash-recovery at scale. By streaming findings directly into unified, append-only JSONL logs, Smell-Ranker generates the high-fidelity event streams required for downstream machine learning and empirical software engineering research.
 
