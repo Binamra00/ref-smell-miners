@@ -1,6 +1,5 @@
 import os
 import sys
-import json
 from pathlib import Path
 
 # --- 0. LOAD DOTENV ---
@@ -39,7 +38,7 @@ if not WORKSPACE_ROOT.exists():
     WORKSPACE_ROOT.mkdir(parents=True, exist_ok=True)
 
 # --- 3. DEFINE CORE PATHS ---
-TOOLS_PATH = WORKSPACE_ROOT / "tools"
+TOOLS_PATH = WORKSPACE_ROOT / ".tools"
 REPOS_PATH = WORKSPACE_ROOT / "repos"
 OUTPUTS_PATH = WORKSPACE_ROOT / "outputs"
 VERSIONS_PATH = WORKSPACE_ROOT / "versions"
@@ -47,17 +46,29 @@ VERSIONS_PATH = WORKSPACE_ROOT / "versions"
 for path in [TOOLS_PATH, REPOS_PATH, OUTPUTS_PATH, VERSIONS_PATH]:
     path.mkdir(exist_ok=True)
 
-# --- 4. TOOL CONFIGURATION ---
-PMD_VERSION = "pmd-bin-7.19.0"
-RM_VERSION = "RefactoringMiner-3.0.12"
+# --- 4. SECURE ENVIRONMENT VARIABLE PROVISIONING ---
+def get_required_env(var_name: str) -> str:
+    """Safely retrieves required environment variables or halts execution."""
+    val = os.getenv(var_name)
+    if not val:
+        raise RuntimeError(f"❌ Configuration Error: Missing required environment variable '{var_name}'. "
+                           f"Ensure your .env file is configured correctly based on example.env.")
+    return val
 
-# SECURITY: SHA-256 Checksums
-PMD_SHA256 = "beccb2c9c2abfd2e974a29f843a3d54565ce01bbf80fda947072fe10b4a2d3f0"
-RM_SHA256 = "cc15a9cc9c2805583043f11434554d56471680671e13341ecf7d550fb253dfcb"
+# PMD Environment Config
+PMD_VERSION = get_required_env("PMD_VERSION")
+PMD_URL = get_required_env("PMD_URL")
+PMD_SHA256 = get_required_env("PMD_SHA256")
+
+# RefactoringMiner Environment Config
+RM_VERSION = get_required_env("RM_VERSION")
+RM_URL = get_required_env("RM_URL")
+RM_SHA256 = get_required_env("RM_SHA256")
 
 # Tool Internals
 RM_ENTRY_POINT_CLASS = "org.refactoringminer.RefactoringMiner"
 
+# --- 5. TOOLCHAIN EXECUTION PATHS ---
 # Determine extension based on OS (Windows requires .bat)
 if os.name == 'nt':
     PMD_EXEC = "pmd.bat"
@@ -69,16 +80,15 @@ else:
 PMD_PATH = TOOLS_PATH / PMD_VERSION / "bin" / PMD_EXEC
 RM_PATH = TOOLS_PATH / RM_VERSION / "bin" / RM_EXEC
 
-# --- 5. TOOL DOWNLOAD URLS ---
-PMD_URL = "https://github.com/pmd/pmd/releases/download/pmd_releases%2F7.19.0/pmd-dist-7.19.0-bin.zip"
-RM_URL = "https://github.com/tsantalis/RefactoringMiner/releases/download/3.0.12/RefactoringMiner-3.0.12.zip"
-
 # --- 6. TARGET REPOSITORIES ---
 TOY_PROJECT_PATH = REPOS_PATH / "toy_project"
 
 # --- 7. INTERNAL ASSETS ---
 RULES_DIR = REPO_ROOT / "pipeline" / "rulesets"
 PMD_RULESET_PATH = RULES_DIR / "pmd_rules_00.xml"
+
+if not PMD_RULESET_PATH.exists():
+    print(f"⚠️ Warning: PMD ruleset not found at {PMD_RULESET_PATH}. Ensure the file exists before running PMD.")
 
 # --- 8. UTILITIES ---
 def escape_path(path_obj):
@@ -89,30 +99,9 @@ RM_PATH_ESCAPED = escape_path(RM_PATH)
 TOY_PROJECT_PATH_ESCAPED = escape_path(TOY_PROJECT_PATH)
 WORKSPACE_ROOT_ESCAPED = escape_path(WORKSPACE_ROOT)
 
-# --- 9. HEURISTICS ---
-# HEURISTICS_PATH = REPO_ROOT / "pipeline" / "heuristic_seeds.json"
-# HEURISTICS = {}
-#
-# if HEURISTICS_PATH.exists():
-#     try:
-#         with open(HEURISTICS_PATH, 'r') as f:
-#             HEURISTICS = json.load(f)
-#         print(f"⚙️  Heuristics loaded from {HEURISTICS_PATH.name}")
-#     except Exception as e:
-#         print(f"⚠️ Error loading heuristics: {e}")
-# else:
-#     print("⚠️ Heuristics file not found. Using internal defaults.")
-#     HEURISTICS = {
-#         "refactoring": {"churn_sensitivity": 20, "purity_target_percent": 80.0, "density_target_percent": 40.0},
-#         "repo_mining": {
-#             "fix_keywords": ['fix', 'bug', 'issue'],
-#             "refactor_keywords": ['refactor', 'cleanup']
-#         }
-#     }
+# --- 9. CONSTANTS ---
+VALID_STAGES = ["all", "meta", "refm", "pmd"]
 
-# --- 10. CONSTANTS ---
-VALID_STAGES = ["all", "meta", "refm", "pmd", "pmd_history"]
-
-# --- 11. I/O RESILIENCE CONFIGURATION ---
-IO_MAX_RETRIES = 5
-IO_RETRY_DELAY_BASE = 0.1
+# --- 10. I/O RESILIENCE CONFIGURATION ---
+IO_MAX_RETRIES = int(os.getenv("IO_MAX_RETRIES", 5))
+IO_RETRY_DELAY_BASE = float(os.getenv("IO_RETRY_DELAY_BASE", 0.1))
