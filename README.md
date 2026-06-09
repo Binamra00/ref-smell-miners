@@ -1,16 +1,20 @@
-# Smell-Ranker: Automated Software Repository Mining Engine
+# Smell-Ranker: Resilient Repository Mining Engine
 
-**Project:** Automated Code Smell and Refactoring Extraction Pipeline  
-**Version:** 1.0.0 (Core Mining Engine)  
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Java 21](https://img.shields.io/badge/java-21-red.svg)](https://adoptium.net/)
+
+**Project:** Time-Series Code Smell and Refactoring Extraction Pipeline  
+**Version:** 1.0.0 (Core Extraction Engine)  
 **Status:** Stable / Data Acquisition Phase
 
 ---
 
 ## 1. System Overview
 
-**Smell-Ranker** is an automated, resilient pipeline designed to systematically mine software repositories. It reconstructs the historical evolution of a codebase by extracting objective developer actions (refactorings) and evaluating structural decay (code smells) across the entire Git lineage. 
+**Smell-Ranker** provides a resilient execution pipeline to orchestrate structural and evolutionary miners across historical Java repository states. It reconstructs the historical evolution of a codebase by extracting objective developer actions (refactorings) and evaluating structural decay (code smells) across the entire Git lineage.
 
-By automating the orchestration of advanced static analysis tools and version control graph traversal, Smell-Ranker generates the high-fidelity, unified event streams required for downstream machine learning and predictive software engineering research.
+Rather than building a novel static analyzer, Smell-Ranker serves as a highly capable, time-traveling wrapper around industry-standard tools (**PMD** and **RefactoringMiner**). It handles the tedious, error-prone mechanics of historical Git checkout operations, headless static analysis, and crash-recovery at scale. By streaming findings directly into unified, append-only JSONL logs, Smell-Ranker generates the high-fidelity event streams required for downstream machine learning and empirical software engineering research.
 
 ### Key Features
 
@@ -195,7 +199,7 @@ python -m pipeline.main --help
 To execute the standard extraction for a target repository:
 
 ```bash
-python -m pipeline.main --repo https://github.com/apache/commons-lang.git --stage all
+python -m pipeline.main --repo https://github.com/danilofes/refactoring-toy-example.git --stage all
 ```
 
 ### Command-Line Arguments
@@ -249,37 +253,38 @@ The architecture adheres strictly to software engineering best practices.
 
 ## 7. Toolchain Configuration
 
+Smell-Ranker utilizes a secure, dynamic provisioning system. Tool versions and download URLs are not hardcoded into the pipeline; they are managed entirely via your local `.env` configuration file.
+
 ### RefactoringMiner
-- **Version**: 3.0.12
-- **Build Requirement**: Java 17+
-- **Role**: Phase 1 – History & Intent Mining
+* **Role**: Evolutionary History & Intent Mining (`refm` stage)
+* **Version**: Configured via `.env` *(Tested default: `v3.1.3`)*
+* **Environment Requirement**: Java 17+
 
 ### PMD
-- **Version**: 7.19.0
-- **Role**: Phase 2 – Structural Decay & Code Smell Detection
-- **Configured Ruleset**: `pmd_rules_00.xml`
-
----
+* **Role**: Time-Travel Structural Decay & Code Smell Detection (`pmd` stage)
+* **Version**: Configured via `.env` *(Tested default: `v7.24.0`)*
+* **Environment Requirement**: Java 21+ *(Required for PMD 7.x architecture)*
+* **Active Ruleset**: `pipeline/rulesets/pmd_rules_00.xml`
 
 ## 8. Verification & QA (The "Zero-Touch" Pipeline)
 
-The reliability of Smell-Ranker is guaranteed by a **3-Layer Testing Pyramid**. 
+> ⚠️ **Test Suite Status:** The core extraction engine is battle-tested and was used to process tens of thousands of commits across massive Apache repositories for our empirical study. The standalone public `pytest` suite is currently undergoing refactoring to align with our new dynamic `.env` provisioning architecture.
+
+The reliability of the Smell-Ranker architecture is designed around a **3-Layer Testing Philosophy**:
 
 ### Layer 1: Logic Verification (Unit)
-- **Math Safety**: Validates that density/purity formulas handle mathematical edge cases (e.g., `total_commits=0`) without crashing (Boundary Value Analysis).
 - **State Resilience**: Verifies the "Lazarus Protocol" — ensuring the system correctly identifies corrupt state files, archives them, and self-heals without user intervention.
-- **Idempotency**: Proves that processing the same commit multiple times does not append duplicate JSONL records or skew aggregation metrics.
+- **Idempotency**: Ensures that processing the same commit multiple times (e.g., after a crash) does not append duplicate JSONL records.
 
 ### Layer 2: Tool Orchestration (Integration)
-- **Poison Pill Defense**: Verifies that if an external tool (PMD) hangs indefinitely on a complex AST, the pipeline catches the subprocess timeout, logs the failure, and continues mining.
-- **Exit Code Semantics**: Confirms that PMD `Exit Code 4` is correctly mapped to "Violations Found" (Success), preventing false-positive system failures.
+- **Poison Pill Defense**: Ensures that if an external tool (PMD) hangs indefinitely on a complex AST, the pipeline catches the subprocess timeout, logs the failure, and continues mining without halting the batch.
+- **Exit Code Semantics**: Confirms that PMD `Exit Code 4` is correctly mapped to "Violations Found" (Success), preventing false-positive system crashes.
 
 ### Layer 3: Environment Safety Nets
 - **State Reversion**: Verifies that the repository working tree always reverts to the target default branch (`main` / `master`) even if the Python process is abruptly terminated mid-checkout.
 
-**Run the suite locally:**
+### System Test Flight
+To verify that the pipeline and toolchain are correctly provisioned on your local machine, run a full extraction on a small, fast toy repository:
+
 ```bash
-pytest tests/ -v
-# Run only unit tests
-pytest tests/unit/
-```
+python -m pipeline.main --repo [https://github.com/danilofes/refactoring-toy-example.git](https://github.com/danilofes/refactoring-toy-example.git) --stage all
