@@ -1,0 +1,20 @@
+.idea/
+.env
+venv/
+workspace_data/
+__pycache__/
+thesis_evidence_candidates.csv
+debug_heuristic.py
+.pytest_cache/
+validation/
+venv library root/
+temp_generate_plots.
+pipeline/temp_test.py
+sampling/
+analyzer/
+analysis/
+docs/
+pipeline/heuristics/
+pipeline/heuristic_seeds.json
+heuristic_analysis.py
+pipeline/commands/heuristic_cmd.py

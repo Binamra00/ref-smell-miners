@@ -1,0 +1,5 @@
+pydriller
+python-dotenv
+pytest
+pytest-mock
+polars
