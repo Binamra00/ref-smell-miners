@@ -182,12 +182,51 @@ The pipeline includes a smart `RepositoryLoader` that handles acquisition automa
 - **URL Mode (Auto-Clone):** Pass a GitHub URL. The system will automatically clone it into `workspace_data/repos/`.
 - **Local Mode:** Pass a folder name if the repository already exists in `workspace_data/repos/`.
 
-### 5. Run the Pipeline
-Execute the orchestrator using the main facade.
+## 5. Usage & CLI Options
+
+The pipeline is managed via a central Python facade. You can view all available execution arguments at any time by invoking the `--help` menu:
+
 ```bash
-python -m pipeline.main --repo <URL_OR_NAME> --stage <STAGE> [OPTIONS]
+python -m pipeline.main --help
 ```
-**Available Stages:** `all`, `meta`, `refm`, `pmd`, `pmd_history`
+
+### Basic Execution
+
+To execute the standard extraction for a target repository:
+
+```bash
+python -m pipeline.main --repo https://github.com/apache/commons-lang.git --stage all
+```
+
+### Command-Line Arguments
+
+| Flag | Description |
+|------|-------------|
+| `--repo` | Required. Target Repository. Can be a local folder name OR a GitHub URL. |
+| `--stage` | Pipeline stage to execute (`meta`, `refm`, `pmd`, `all`). Default is `all`. |
+| `--version` | Target Git Tag or Commit Hash (e.g., `v3.1.0`). Sets the max boundary for historical miners. *(Note: Avoid using this with the `meta` stage).* |
+| `--sample` | Filename in `workspace_data/versions/` containing target tags for sampling. *(Used to limit PMD checkouts to specific releases).* |
+| `--batch` | Number of commits to process per chunk to manage memory on massive repositories. Set to `0` for unlimited. *(Default: `50`).* |
+
+### Execution Examples
+
+#### 1. Full historical extraction (Auto-clones from URL)
+
+```bash
+python -m pipeline.main --repo https://github.com/apache/commons-lang.git --stage all
+```
+
+#### 2. Bounded extraction (Stop at a specific tag)
+
+```bash
+python -m pipeline.main --repo commons-lang --stage refm --version LANG_3_9
+```
+
+#### 3. Memory-safe PMD execution (Batching)
+
+```bash
+python -m pipeline.main --repo commons-lang --stage pmd --batch 25
+```
 
 ---
 
