@@ -4,6 +4,14 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Java 21](https://img.shields.io/badge/java-21-red.svg)](https://adoptium.net/)
 
+> ⚠️ **IMPORTANT NOTE: Looking to reproduce the paper's results?**
+> 
+> This repository contains the **Raw Mining Infrastructure** (the heavy-duty Java/Python architecture used to orchestrate PMD and RefactoringMiner across historical Git ledgers). Running this pipeline from scratch requires a complex local environment and significant compute time.
+> 
+> If you are a reviewer or researcher looking for the **Analytical Replication Package** (the zero-configuration Google Colab pipeline that engineers the matrices, calibrates the thresholds, and generates the final evaluation tables for the paper), please visit our dedicated replication repository here:
+> 
+> 👉 **https://github.com/Binamra00/rs-replication.git**
+
 **Project:** Time-Series Code Smell and Refactoring Extraction Pipeline  
 **Version:** 1.0.0 (Core Extraction Engine)  
 **Status:** Stable / Data Acquisition Phase
