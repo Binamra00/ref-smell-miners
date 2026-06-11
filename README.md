@@ -237,7 +237,13 @@ python -m pipeline.main --repo commons-lang --stage refm --version LANG_3_9
 #### 3. Memory-safe PMD execution (Batching)
 
 ```bash
-python -m pipeline.main --repo commons-lang --stage pmd --batch 25
+python -m pipeline.main --repo commons-lang --stage pmd --version LANG_3_9 --batch 25
+```
+
+#### 4. Release Mining (Sample File)
+
+```bash
+python -m pipeline.main --repo commons-lang --stage pmd --sample rel_hist_commons-lang.json --batch 0
 ```
 
 ---
