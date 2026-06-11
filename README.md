@@ -301,4 +301,4 @@ The reliability of the Smell-Ranker architecture is designed around a **3-Layer 
 To verify that the pipeline and toolchain are correctly provisioned on your local machine, run a full extraction on a small, fast toy repository:
 
 ```bash
-python -m pipeline.main --repo [https://github.com/danilofes/refactoring-toy-example.git](https://github.com/danilofes/refactoring-toy-example.git) --stage all
+python -m pipeline.main --repo https://github.com/danilofes/refactoring-toy-example.git --stage all
