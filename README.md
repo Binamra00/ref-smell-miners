@@ -305,7 +305,7 @@ python -m pipeline.main --repo https://github.com/danilofes/refactoring-toy-exam
 ```
 ## 🙏 Acknowledgements & Core Dependencies
 
-This replication package relies on the incredible open-source engineering of several core tools. If you are building upon this pipeline, please ensure you cite the original creators:
+This pipeline relies on the incredible open-source engineering of several core tools. If you are building upon this pipeline, please ensure you cite the original creators:
 
 **RefactoringMiner:** Our ground-truth refactoring labels are generated using RefactoringMiner (v3.x). 
 * Tsantalis, N., Mansouri, M., Eshkevari, L. M., Mazinanian, D., & Dig, D. (2018). *Accurate and Efficient Refactoring Detection in Commit History.* ICSE '18.
