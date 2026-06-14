@@ -302,3 +302,15 @@ To verify that the pipeline and toolchain are correctly provisioned on your loca
 
 ```bash
 python -m pipeline.main --repo https://github.com/danilofes/refactoring-toy-example.git --stage all
+```
+## 🙏 Acknowledgements & Core Dependencies
+
+This replication package relies on the incredible open-source engineering of several core tools. If you are building upon this pipeline, please ensure you cite the original creators:
+
+**RefactoringMiner:** Our ground-truth refactoring labels are generated using RefactoringMiner (v3.x). 
+* Tsantalis, N., Mansouri, M., Eshkevari, L. M., Mazinanian, D., & Dig, D. (2018). *Accurate and Efficient Refactoring Detection in Commit History.* ICSE '18.
+* Tsantalis, N., Ketkar, A., & Dig, D. (2022). *RefactoringMiner 2.0.* IEEE Transactions on Software Engineering.
+* Alikhanifard, P., & Tsantalis, N. (2025). *A Novel Refactoring and Semantic Aware Abstract Syntax Tree Differencing Tool...* ACM TOSEM.
+
+**PMD:** Our static analysis metrics are extracted using PMD.
+* PMD Contributors. *PMD Source Code Analyzer.* https://pmd.github.io/
